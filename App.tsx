@@ -4,6 +4,7 @@ import Timer from './components/Timer';
 import Concierge from './components/Concierge';
 import Footer from './components/Footer';
 import ProductRow from './components/ProductRow';
+import SystemLog from './components/SystemLog';
 
 // List of Gucci campaign videos to select from randomly
 const VIDEO_URLS = [
@@ -31,10 +32,6 @@ const App: React.FC = () => {
 
     return () => clearInterval(interval);
   }, []);
-
-  const toggleConcierge = () => {
-    setIsConciergeOpen(!isConciergeOpen);
-  };
 
   const handleTimerExpire = () => {
     setIsExpired(true);
@@ -102,6 +99,9 @@ const App: React.FC = () => {
 
         {/* Product Showcase */}
         <ProductRow />
+
+        {/* System Logs */}
+        <SystemLog />
 
         {/* Detailed Footer */}
         <Footer />
