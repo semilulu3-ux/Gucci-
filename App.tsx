@@ -17,7 +17,7 @@ const App: React.FC = () => {
   const [isExpired, setIsExpired] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState(VIDEO_URLS[0]);
 
-  // Rotate videos randomly every 5 seconds
+  // Rotate videos randomly every 10 seconds
   useEffect(() => {
     // Set initial random video
     setCurrentVideoUrl(VIDEO_URLS[Math.floor(Math.random() * VIDEO_URLS.length)]);
