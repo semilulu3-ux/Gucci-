@@ -43,7 +43,7 @@ const App: React.FC = () => {
         {/* Main Typography */}
         <div className="text-center mb-10 animate-fade-in z-10 w-full">
           <h1 className="text-4xl md:text-[3.5rem] lg:text-6xl font-light tracking-[0.05em] text-white uppercase mb-8">
-            AGENDA TELAH DI MULAI
+            AGENDA DI MULAI
           </h1>
           
           {/* Timer Integration */}
