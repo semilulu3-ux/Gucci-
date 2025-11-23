@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Timer from './components/Timer';
-import Concierge from './components/Concierge';
 import Footer from './components/Footer';
 import ProductRow from './components/ProductRow';
 import SystemLog from './components/SystemLog';
-import TerminalModal from './components/TerminalModal';
 
 // List of Gucci campaign videos to select from randomly
 const VIDEO_URLS = [
@@ -17,8 +15,6 @@ const VIDEO_URLS = [
 const GUCCI_IMAGE_URL = "https://media.gucci.com/content/DiaryArticleDouble_Standard_1400x894/1744017303/DiaryArticleDouble_Gucci-MDAY-APR25-GUCCI-FESTIVITIES-ADV-YARA-KERI-A-0719_001_Default.jpg";
 
 const App: React.FC = () => {
-  const [isConciergeOpen, setIsConciergeOpen] = useState(false);
-  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState(VIDEO_URLS[0]);
 
@@ -41,14 +37,6 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans">
-      {/* Concierge Drawer Overlay */}
-      {isConciergeOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-40 transition-opacity"
-          onClick={() => setIsConciergeOpen(false)}
-        />
-      )}
-
       <Header />
 
       <main className="relative pt-32 pb-0 px-4 md:px-8 flex flex-col items-center w-full max-w-[1920px] mx-auto">
@@ -102,18 +90,13 @@ const App: React.FC = () => {
         {/* Product Showcase */}
         <ProductRow />
 
-        {/* System Logs (Clickable) */}
-        <SystemLog onOpenTerminal={() => setIsTerminalOpen(true)} />
+        {/* System Logs */}
+        <SystemLog />
 
         {/* Detailed Footer */}
         <Footer />
 
       </main>
-
-      <Concierge isOpen={isConciergeOpen} onClose={() => setIsConciergeOpen(false)} />
-      
-      {/* Full Screen Terminal Modal */}
-      <TerminalModal isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} />
     </div>
   );
 };
