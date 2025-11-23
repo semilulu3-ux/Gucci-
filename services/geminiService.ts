@@ -1,13 +1,39 @@
-// Mock service for Vercel deployment stability.
-// Replaces the Google GenAI SDK to prevent build errors with missing API keys or package versions.
+import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
 
-export const sendMessageToGemini = async (
-  _message: string,
-  _history: { role: string; parts: { text: string }[] }[]
-): Promise<string> => {
-  // Simulate network latency
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+const apiKey = process.env.API_KEY || '';
 
-  // Return static concierge response
-  return "I apologize, but the AI concierge service is currently undergoing scheduled maintenance. Please contact the coordinator for immediate assistance with your retrieval.";
-};
+class GeminiService {
+  private ai: GoogleGenAI;
+  private chat: Chat | null = null;
+
+  constructor() {
+    this.ai = new GoogleGenAI({ apiKey });
+  }
+
+  public async startChat() {
+    this.chat = this.ai.chats.create({
+      model: 'gemini-2.5-flash',
+      config: {
+        systemInstruction: 'You are a helpful and sophisticated concierge for Gucci. You speak with elegance, brevity, and a touch of Italian flair. You assist customers with product inquiries, styling advice, and brand history.',
+      },
+    });
+  }
+
+  public async sendMessage(message: string): Promise<string> {
+    if (!this.chat) {
+      await this.startChat();
+    }
+    
+    try {
+        if (!this.chat) throw new Error("Chat not initialized");
+        
+        const response: GenerateContentResponse = await this.chat.sendMessage({ message });
+        return response.text || "I apologize, but I cannot answer that at the moment.";
+    } catch (error) {
+        console.error("Gemini API Error:", error);
+        return "I am currently unable to connect to the styling network. Please try again later.";
+    }
+  }
+}
+
+export const geminiService = new GeminiService();

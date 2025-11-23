@@ -1,137 +1,151 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { X, Send } from 'lucide-react';
-import { sendMessageToGemini } from '../services/geminiService';
-import { Message, ChatStatus } from '../types';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Send, User, Sparkles } from 'lucide-react';
+import { geminiService } from '../services/geminiService';
 
 interface ConciergeProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+interface Message {
+  id: string;
+  text: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
+}
+
 const Concierge: React.FC<ConciergeProps> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
-      role: 'model',
-      text: 'Welcome to The Icons. I am your personal concierge. How may I assist you with this collection today?',
-      timestamp: new Date(),
-    },
+      text: "Buonasera. Welcome to Gucci Client Services. I am your personal concierge. How may I assist you with our collections today?",
+      sender: 'bot',
+      timestamp: new Date()
+    }
   ]);
-  const [input, setInput] = useState('');
-  const [status, setStatus] = useState<ChatStatus>(ChatStatus.IDLE);
+  const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim() || status === ChatStatus.LOADING) return;
+  const handleSendMessage = async () => {
+    if (!inputValue.trim()) return;
 
-    const userMsg: Message = {
+    const userMessage: Message = {
       id: Date.now().toString(),
-      role: 'user',
-      text: input,
-      timestamp: new Date(),
+      text: inputValue,
+      sender: 'user',
+      timestamp: new Date()
     };
 
-    setMessages((prev) => [...prev, userMsg]);
-    setInput('');
-    setStatus(ChatStatus.LOADING);
-
-    // Prepare history for API
-    const history = messages.map(m => ({
-        role: m.role,
-        parts: [{ text: m.text }]
-    }));
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue('');
+    setIsLoading(true);
 
     try {
-        const responseText = await sendMessageToGemini(userMsg.text, history);
-        
-        const botMsg: Message = {
-            id: (Date.now() + 1).toString(),
-            role: 'model',
-            text: responseText,
-            timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, botMsg]);
-        setStatus(ChatStatus.IDLE);
+      const responseText = await geminiService.sendMessage(userMessage.text);
+      
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: responseText,
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-        setStatus(ChatStatus.ERROR);
+      console.error(error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "I apologize, but I am having trouble connecting to the network right now.",
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleSend();
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-y-0 right-0 w-full md:w-[400px] bg-black border-l border-gray-800 shadow-2xl z-[60] flex flex-col transform transition-transform duration-300 ease-in-out">
+    <div 
+      className={`fixed top-0 right-0 h-full w-full md:w-[450px] bg-black border-l border-white/10 shadow-2xl z-50 transform transition-transform duration-500 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+    >
       {/* Header */}
-      <div className="flex justify-between items-center p-6 border-b border-gray-900">
-        <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-white">Client Concierge</h2>
-        <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-          <X size={20} />
+      <div className="flex justify-between items-center p-6 border-b border-white/10 bg-black/90 backdrop-blur-sm absolute top-0 w-full z-20">
+        <div>
+          <h2 className="text-xl font-serif tracking-widest text-white">CONCIERGE</h2>
+          <p className="text-[10px] text-gray-400 tracking-widest uppercase mt-1">Gucci Client Services</p>
+        </div>
+        <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors p-2">
+          <X size={24} />
         </button>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      {/* Chat Area */}
+      <div className="flex-1 overflow-y-auto pt-28 pb-32 px-6 space-y-6 h-full bg-zinc-950/80">
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex flex-col ${
-              msg.role === 'user' ? 'items-end' : 'items-start'
-            }`}
-          >
-            <div
-              className={`max-w-[85%] text-sm leading-relaxed ${
-                msg.role === 'user'
-                  ? 'text-white text-right'
-                  : 'text-gray-300 font-serif italic'
-              }`}
-            >
+          <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
+            <div className={`max-w-[85%] ${msg.sender === 'user' ? 'bg-white text-black' : 'bg-zinc-900/80 text-gray-200 border border-white/10'} p-4 text-sm font-sans leading-relaxed shadow-lg`}>
+              <div className="flex items-center gap-2 mb-2 border-b border-current border-opacity-10 pb-2 opacity-60">
+                {msg.sender === 'user' ? <User size={12} /> : <Sparkles size={12} />}
+                <span className="text-[9px] uppercase tracking-wider font-bold">
+                  {msg.sender === 'user' ? 'You' : 'Gucci Concierge'}
+                </span>
+              </div>
               {msg.text}
             </div>
-            <span className="text-[10px] text-gray-700 mt-1 uppercase tracking-wider">
-               {msg.role === 'user' ? 'You' : 'Concierge'}
-            </span>
           </div>
         ))}
-        {status === ChatStatus.LOADING && (
-          <div className="flex items-start">
-            <div className="text-xs text-gray-500 font-serif italic animate-pulse">
-              Typing...
+        {isLoading && (
+           <div className="flex justify-start animate-fade-in">
+            <div className="bg-zinc-900 border border-white/10 p-4 min-w-[100px]">
+              <div className="flex space-x-2 items-center justify-center h-4">
+                <div className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
             </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="p-6 border-t border-gray-900 bg-black">
-        <div className="relative">
+      {/* Input Area */}
+      <div className="absolute bottom-0 w-full p-6 bg-black border-t border-white/10 z-20">
+        <div className="relative flex items-center">
           <input
             type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyPress}
-            placeholder="Inquire about this piece..."
-            className="w-full bg-transparent border-b border-gray-700 py-3 pr-10 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
+            placeholder="Type your inquiry..."
+            className="w-full bg-zinc-900 text-white placeholder-gray-500 px-4 py-4 pr-12 border border-white/10 focus:border-white/30 focus:outline-none text-sm tracking-wide transition-colors"
+            disabled={isLoading}
           />
-          <button
-            onClick={handleSend}
-            disabled={status === ChatStatus.LOADING}
-            className="absolute right-0 top-3 text-gray-500 hover:text-white transition-colors"
+          <button 
+            onClick={handleSendMessage}
+            disabled={isLoading || !inputValue.trim()}
+            className="absolute right-3 p-2 text-gray-400 hover:text-white disabled:opacity-30 transition-colors"
           >
-            <Send size={16} />
+            <Send size={18} />
           </button>
+        </div>
+        <div className="text-center mt-3">
+          <p className="text-[9px] text-gray-600 tracking-widest uppercase">
+            Powered by Google Gemini
+          </p>
         </div>
       </div>
     </div>
