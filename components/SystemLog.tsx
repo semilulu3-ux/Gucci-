@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Terminal } from 'lucide-react';
 
 const SYSTEM_MESSAGES = [
   "INITIALIZING_DAEMON_V2.4...",
@@ -29,7 +30,11 @@ const generateHex = () => {
   return result;
 };
 
-const SystemLog: React.FC = () => {
+interface SystemLogProps {
+  onOpenTerminal?: () => void;
+}
+
+const SystemLog: React.FC<SystemLogProps> = ({ onOpenTerminal }) => {
   const [currentLine, setCurrentLine] = useState("SYSTEM_READY");
 
   useEffect(() => {
@@ -38,24 +43,30 @@ const SystemLog: React.FC = () => {
       const hex = generateHex();
       
       setCurrentLine(`PTR_0x${hex} > ${randomCmd}`);
-    }, 150); // Updates very fast to look like "working" code
+    }, 150); 
 
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="w-full max-w-[1000px] mx-auto px-4 mt-8 mb-4 z-10 relative animate-fade-in">
-      {/* The "Small Long Bar" Container */}
-      <div className="w-full h-8 bg-black border border-green-900/30 flex items-center px-4 overflow-hidden shadow-[0_0_10px_rgba(0,255,0,0.05)]">
+      {/* The "Small Long Bar" Button */}
+      <div 
+        onClick={onOpenTerminal}
+        className="w-full h-8 bg-black border border-green-900/30 flex items-center px-4 overflow-hidden shadow-[0_0_10px_rgba(0,255,0,0.05)] cursor-pointer hover:bg-green-900/10 hover:border-green-500/50 transition-all duration-300 group"
+      >
         
         {/* Blinking Cursor / Status Indicator */}
-        <div className="flex-shrink-0 w-1.5 h-4 bg-green-500/80 animate-pulse mr-3"></div>
+        <div className="flex-shrink-0 w-1.5 h-4 bg-green-500/80 animate-pulse mr-3 group-hover:bg-green-400"></div>
         
         {/* Scrolling Text */}
-        <div className="font-mono text-[10px] md:text-xs text-green-500/80 tracking-wider truncate uppercase">
-          <span className="opacity-50 mr-2">$ root@gucci_sys:</span>
+        <div className="font-mono text-[10px] md:text-xs text-green-500/80 tracking-wider truncate uppercase flex-1">
+          <span className="opacity-50 mr-2 group-hover:opacity-100 transition-opacity">$ Adveristing P4P:</span>
           {currentLine}
         </div>
+        
+        {/* Icon hint */}
+        <Terminal size={12} className="text-green-500 opacity-0 group-hover:opacity-100 transition-opacity ml-2" />
         
       </div>
     </div>

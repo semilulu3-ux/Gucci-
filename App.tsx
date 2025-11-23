@@ -5,6 +5,7 @@ import Concierge from './components/Concierge';
 import Footer from './components/Footer';
 import ProductRow from './components/ProductRow';
 import SystemLog from './components/SystemLog';
+import TerminalModal from './components/TerminalModal';
 
 // List of Gucci campaign videos to select from randomly
 const VIDEO_URLS = [
@@ -17,6 +18,7 @@ const GUCCI_IMAGE_URL = "https://media.gucci.com/content/DiaryArticleDouble_Stan
 
 const App: React.FC = () => {
   const [isConciergeOpen, setIsConciergeOpen] = useState(false);
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState(VIDEO_URLS[0]);
 
@@ -100,8 +102,8 @@ const App: React.FC = () => {
         {/* Product Showcase */}
         <ProductRow />
 
-        {/* System Logs */}
-        <SystemLog />
+        {/* System Logs (Clickable) */}
+        <SystemLog onOpenTerminal={() => setIsTerminalOpen(true)} />
 
         {/* Detailed Footer */}
         <Footer />
@@ -109,6 +111,9 @@ const App: React.FC = () => {
       </main>
 
       <Concierge isOpen={isConciergeOpen} onClose={() => setIsConciergeOpen(false)} />
+      
+      {/* Full Screen Terminal Modal */}
+      <TerminalModal isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} />
     </div>
   );
 };
