@@ -1,13 +1,13 @@
-// Service adapted to run without @google/genai SDK to prevent build errors.
-// Currently returns a static response to ensure the app functions on Vercel.
+// Mock service for Vercel deployment stability.
+// Replaces the Google GenAI SDK to prevent build errors with missing API keys or package versions.
 
 export const sendMessageToGemini = async (
-  message: string,
-  history: { role: string; parts: { text: string }[] }[]
+  _message: string,
+  _history: { role: string; parts: { text: string }[] }[]
 ): Promise<string> => {
-  // Simulate a short network delay for realism
+  // Simulate network latency
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  // Return a fallback message since the AI SDK has been removed
+  // Return static concierge response
   return "I apologize, but the AI concierge service is currently undergoing scheduled maintenance. Please contact the coordinator for immediate assistance with your retrieval.";
 };
