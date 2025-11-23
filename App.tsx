@@ -4,6 +4,7 @@ import Timer from './components/Timer';
 import Footer from './components/Footer';
 import ProductRow from './components/ProductRow';
 import SystemLog from './components/SystemLog';
+import TerminalModal from './components/TerminalModal';
 
 // List of Gucci campaign videos to select from randomly
 const VIDEO_URLS = [
@@ -15,6 +16,7 @@ const VIDEO_URLS = [
 const GUCCI_IMAGE_URL = "https://media.gucci.com/content/DiaryArticleDouble_Standard_1400x894/1744017303/DiaryArticleDouble_Gucci-MDAY-APR25-GUCCI-FESTIVITIES-ADV-YARA-KERI-A-0719_001_Default.jpg";
 
 const App: React.FC = () => {
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState(VIDEO_URLS[0]);
 
@@ -90,13 +92,16 @@ const App: React.FC = () => {
         {/* Product Showcase */}
         <ProductRow />
 
-        {/* System Logs */}
-        <SystemLog />
+        {/* System Logs (Clickable) */}
+        <SystemLog onOpenTerminal={() => setIsTerminalOpen(true)} />
 
         {/* Detailed Footer */}
         <Footer />
 
       </main>
+
+      {/* Full Screen Terminal Modal */}
+      <TerminalModal isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} />
     </div>
   );
 };
