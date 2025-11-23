@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Heart } from 'lucide-react';
 
 const PRODUCT_IMAGES = [
   'https://media.gucci.com/style/DarkGray_Center_0_0_800x800/1756395933/841290_FAFE7_7541_001_055_0000_Light-GG-Marmont-mini-shoulder-bag.jpg',
@@ -44,6 +45,7 @@ const PRODUCT_IMAGES = [
 const ProductRow: React.FC = () => {
   const [displayImages, setDisplayImages] = useState<string[]>([]);
   const [isFading, setIsFading] = useState(false);
+  const [likedItems, setLikedItems] = useState<string[]>([]);
 
   useEffect(() => {
     // Function to generate 9 unique random images from the source list for a 3x3 grid
@@ -69,9 +71,6 @@ const ProductRow: React.FC = () => {
       setIsFading(true);
 
       // 2. Wait for staggered fade out to complete
-      // 9 items * 150ms staggered delay = 1350ms offset for last item.
-      // + 500ms duration = ~1850ms total.
-      // We'll use 1500ms as a good midpoint for the swap to start feeling "sequential"
       setTimeout(() => {
         setDisplayImages(updateImages());
         setIsFading(false);
@@ -82,33 +81,57 @@ const ProductRow: React.FC = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  const toggleLike = (e: React.MouseEvent, imgUrl: string) => {
+    e.stopPropagation();
+    setLikedItems(prev => 
+      prev.includes(imgUrl) 
+        ? prev.filter(item => item !== imgUrl) 
+        : [...prev, imgUrl]
+    );
+  };
+
   // Don't render until we have images loaded
   if (displayImages.length === 0) return null;
 
   return (
     <div className="w-full max-w-[1000px] mx-auto py-12 md:py-24 px-4 z-10 relative animate-fade-in">
       <div className="grid grid-cols-3 gap-3 md:gap-6">
-        {displayImages.map((imgSrc, index) => (
-          <div 
-            key={index} 
-            className="group relative aspect-square bg-white cursor-pointer transition-all duration-500 overflow-hidden border border-white/10 shadow-lg hover:shadow-2xl"
-          >
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition-opacity duration-500 z-20" />
-            
-            <img 
-              src={imgSrc} 
-              alt={`Gucci Showcase ${index + 1}`}
-              style={{ transitionDelay: `${index * 150}ms` }}
-              className={`
-                w-full h-full object-contain p-4 z-10 
-                transition-all duration-500 ease-in-out
-                ${isFading ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'}
-                group-hover:scale-110
-              `}
-            />
-          </div>
-        ))}
+        {displayImages.map((imgSrc, index) => {
+          const isLiked = likedItems.includes(imgSrc);
+          return (
+            <div 
+              key={index} 
+              className="group relative aspect-square bg-white cursor-pointer transition-all duration-500 overflow-hidden border border-white/10 shadow-lg hover:shadow-2xl"
+            >
+              {/* Like Button */}
+              <button 
+                onClick={(e) => toggleLike(e, imgSrc)}
+                className="absolute top-2 right-2 z-30 p-2 transition-transform hover:scale-110 active:scale-95"
+                aria-label="Like product"
+              >
+                <Heart 
+                  size={20} 
+                  className={`transition-colors duration-300 drop-shadow-sm ${isLiked ? 'fill-red-600 text-red-600' : 'text-gray-400 hover:text-gray-600'}`} 
+                />
+              </button>
+
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition-opacity duration-500 z-20 pointer-events-none" />
+              
+              <img 
+                src={imgSrc} 
+                alt={`Gucci Showcase ${index + 1}`}
+                style={{ transitionDelay: `${index * 150}ms` }}
+                className={`
+                  w-full h-full object-contain p-4 z-10 
+                  transition-all duration-500 ease-in-out
+                  ${isFading ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'}
+                  group-hover:scale-110
+                `}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

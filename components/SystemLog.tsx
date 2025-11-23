@@ -34,11 +34,10 @@ const SystemLog: React.FC = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const timestamp = new Date().toISOString().split('T')[1].slice(0, 8);
       const randomCmd = SYSTEM_MESSAGES[Math.floor(Math.random() * SYSTEM_MESSAGES.length)];
       const hex = generateHex();
       
-      setCurrentLine(`[${timestamp}] PTR_0x${hex} > ${randomCmd}`);
+      setCurrentLine(`PTR_0x${hex} > ${randomCmd}`);
     }, 150); // Updates very fast to look like "working" code
 
     return () => clearInterval(interval);
