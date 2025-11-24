@@ -121,7 +121,7 @@ const ProductRow: React.FC = () => {
               <img 
                 src={imgSrc} 
                 alt={`Gucci Showcase ${index + 1}`}
-                style={{ transitionDelay: `${index * 150}ms` }}
+                style={{transitionDelay: `${index * 150}ms`}}
                 className={`
                   w-full h-full object-contain p-4 z-10 
                   transition-all duration-500 ease-in-out
