@@ -53,7 +53,7 @@ const App: React.FC = () => {
                      Proses Sudah Selesai Hubungi Kordinator untuk melakukan penarikan
                  </div>
             ) : (
-                <Timer durationSeconds={300} onExpire={handleTimerExpire} />
+                <Timer durationSeconds={300} onExpire={handleTimerExpire}/>
             )}
           </div>
         </div>
