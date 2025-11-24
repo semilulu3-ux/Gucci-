@@ -74,7 +74,7 @@ const ProductRow: React.FC = () => {
       setTimeout(() => {
         setDisplayImages(updateImages());
         setIsFading(false);
-      }, 1500);
+      }, 500); // Faster transition for snappier feel
 
     }, 5000); // 5 seconds cycle
 
@@ -121,7 +121,7 @@ const ProductRow: React.FC = () => {
               <img 
                 src={imgSrc} 
                 alt={`Gucci Showcase ${index + 1}`}
-                style={{transitionDelay: `${index * 150}ms`}}
+                style={{transitionDelay: `${index * 50}ms`}}
                 className={`
                   w-full h-full object-contain p-4 z-10 
                   transition-all duration-500 ease-in-out

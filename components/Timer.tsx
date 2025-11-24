@@ -6,30 +6,46 @@ interface TimerProps {
 }
 
 const Timer: React.FC<TimerProps> = ({ durationSeconds, onExpire }) => {
-  // Initialize timer directly with durationSeconds.
-  // This ensures the timer resets every time the component is mounted (e.g., page reload or return).
   const [timeLeft, setTimeLeft] = useState<number>(durationSeconds);
 
   useEffect(() => {
-    // Clear legacy storage key if it exists to ensure clean behavior
-    localStorage.removeItem('gucci_timer_target_timestamp');
+    // Key to store the target timestamp in localStorage
+    const STORAGE_KEY = 'gucci_timer_target_v2';
+    
+    // Calculate target time
+    let targetTimestamp = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+    const now = Date.now();
 
-    const intervalId = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(intervalId);
-          onExpire();
-          return 0;
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
+    // If no target exists, or if the stored target is invalid (in the past by a huge margin, indicating old session),
+    // set a new target.
+    if (!targetTimestamp) {
+      targetTimestamp = now + (durationSeconds * 1000);
+      localStorage.setItem(STORAGE_KEY, targetTimestamp.toString());
+    }
+
+    const tick = () => {
+      const currentNow = Date.now();
+      const secondsRemaining = Math.max(0, Math.ceil((targetTimestamp - currentNow) / 1000));
+
+      setTimeLeft(secondsRemaining);
+
+      if (secondsRemaining <= 0) {
+        onExpire();
+      }
+    };
+
+    // Run immediately to prevent flash of initial state
+    tick();
+
+    const intervalId = setInterval(tick, 1000);
 
     return () => clearInterval(intervalId);
-  }, [onExpire]);
+  }, [durationSeconds, onExpire]);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
+
+  if (timeLeft <= 0) return null;
 
   return (
     <div className="flex flex-col items-center justify-center animate-fade-in text-center">

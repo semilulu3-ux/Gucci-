@@ -4,7 +4,7 @@ import Timer from './components/Timer';
 import Footer from './components/Footer';
 import ProductRow from './components/ProductRow';
 
-// List of Gucci campaign videos to select from randomly
+// List of Gucci campaign videos
 const VIDEO_URLS = [
   "https://house-fastly-signed-eu-west-1-prod.brightcovecdn.com/media/v1/pmp4/static/clear/2924921183001/4687bdf7-c429-45dc-bbf4-dafe31dca93a/bc2a75f8-d2c4-4b71-b02a-6bd7ec0d3d95/main.mp4?fastly_token=NjkyMzBhMjNfN2JlOWIyN2MyYzg4NjA1NDIwYTJjMTY5ZWE5OTQ1MjYyZTIwMzdhZjUwOWE5MGRhMTAyMjI2YTIxZTY0Y2IxN18vL2hvdXNlLWZhc3RseS1zaWduZWQtZXUtd2VzdC0xLXByb2QuYnJpZ2h0Y292ZWNkbi5jb20vbWVkaWEvdjEvcG1wNC9zdGF0aWMvY2xlYXIvMjkyNDkyMTE4MzAwMS80Njg3YmRmNy1jNDI5LTQ1ZGMtYmJmNC1kYWZlMzFkY2E5M2EvYmMyYTc1ZjgtZDJjNC00YjcxLWIwMmEtNmJkN2VjMGQzZDk1L21haW4ubXA0",
   "https://house-fastly-signed-eu-west-1-prod.brightcovecdn.com/media/v1/pmp4/static/clear/2924921183001/1ae69177-dc03-40fd-8b6f-4de60b08a8db/052c4667-e7df-437d-b8d5-87ffbaaf1a5f/main.mp4?fastly_token=NjkyMzIxNTJfY2Y2MTYzMDE2YmU1NDMyNGY2ZDNmYTZjYjNhZjM0MTBjODIyNTZlN2JmOTk4M2I3ZmJmYzRkMDY3MzNkMDg3N18vL2hvdXNlLWZhc3RseS1zaWduZWQtZXUtd2VzdC0xLXByb2QuYnJpZ2h0Y292ZWNkbi5jb20vbWVkaWEvdjEvcG1wNC9zdGF0aWMvY2xlYXIvMjkyNDkyMTE4MzAwMS8xYWU2OTE3Ny1kYzAzLTQwZmQtOGI2Zi00ZGU2MGIwOGE4ZGIvMDUyYzQ2NjctZTdkZi00MzdkLWI4ZDUtODdmZmJhYWYxYTVmL21haW4ubXA0",
@@ -25,12 +25,13 @@ const App: React.FC = () => {
     const interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * VIDEO_URLS.length);
       setCurrentVideoUrl(VIDEO_URLS[randomIndex]);
-    }, 5000);
+    }, 10000); // Changed to 10s for better viewing experience
 
     return () => clearInterval(interval);
   }, []);
 
-  const handleTimerExpire = () => {setIsExpired(true);
+  const handleTimerExpire = () => {
+    setIsExpired(true);
   };
 
   return (
@@ -48,8 +49,8 @@ const App: React.FC = () => {
           {/* Timer Integration */}
           <div className="flex justify-center items-center min-h-[90px] mb-4">
              {isExpired ? (
-                 <div className="text-white text-lg md:text-xl font-serif tracking-widest border-y border-white/20 py-6 px-4 md:px-12 bg-black/80 text-center max-w-4xl shadow-2xl">
-                     Proses Sudah Selesai Hubungi Kordinator untuk melakukan penarikan
+                 <div className="animate-fade-in text-white text-lg md:text-xl font-serif tracking-widest border-y border-white/20 py-6 px-4 md:px-12 bg-black/80 text-center max-w-4xl shadow-2xl">
+                     Proses Sudah Selesai. Hubungi Kordinator untuk melakukan penarikan.
                  </div>
             ) : (
                 <Timer durationSeconds={300} onExpire={handleTimerExpire}/>
@@ -58,17 +59,18 @@ const App: React.FC = () => {
         </div>
 
         {/* Hero Media Section */}
-        <div className="relative w-full max-w-[1600px] mx-auto aspect-video md:aspect-[21/9] overflow-hidden bg-black mb-0">
+        <div className="relative w-full max-w-[1600px] mx-auto aspect-video md:aspect-[21/9] overflow-hidden bg-gucci-gray mb-0 shadow-2xl">
             
             {/* Video Layer - Plays when active (Not Expired) */}
             <div className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${!isExpired ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}>
                 <video 
                     key={currentVideoUrl}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover opacity-90"
                     autoPlay 
                     loop 
                     muted 
                     playsInline
+                    poster={GUCCI_IMAGE_URL}
                 >
                     <source src={currentVideoUrl} type="video/mp4"/>
                     Your browser does not support the video tag.
@@ -80,8 +82,9 @@ const App: React.FC = () => {
                 <img 
                     src={GUCCI_IMAGE_URL} 
                     alt="Gucci Icons Campaign" 
-                    className="w-full h-full object-contain grayscale opacity-50 blur-[2px]"
+                    className="w-full h-full object-cover grayscale opacity-50 blur-[2px]"
                 />
+                <div className="absolute inset-0 bg-black/40"></div>
             </div>
         </div>
 
