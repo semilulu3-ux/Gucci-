@@ -30,8 +30,7 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleTimerExpire = () => {
-    setIsExpired(true);
+  const handleTimerExpire = () => {setIsExpired(true);
   };
 
   return (
