@@ -71,7 +71,7 @@ const App: React.FC = () => {
                     muted 
                     playsInline
                 >
-                    <source src={currentVideoUrl} type="video/mp4" />
+                    <source src={currentVideoUrl} type="video/mp4"/>
                     Your browser does not support the video tag.
                 </video>
             </div>
