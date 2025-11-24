@@ -10,17 +10,23 @@ const Timer: React.FC<TimerProps> = ({ durationSeconds, onExpire }) => {
 
   useEffect(() => {
     // Key to store the target timestamp in localStorage
-    const STORAGE_KEY = 'gucci_timer_target_v2';
+    const STORAGE_KEY = 'gucci_agenda_timer_v3';
     
-    // Calculate target time
-    let targetTimestamp = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+    // 1. Get current time
     const now = Date.now();
+    
+    // 2. Retrieve stored target
+    let targetTimestamp = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
 
-    // If no target exists, or if the stored target is invalid (in the past by a huge margin, indicating old session),
-    // set a new target.
-    if (!targetTimestamp) {
-      targetTimestamp = now + (durationSeconds * 1000);
-      localStorage.setItem(STORAGE_KEY, targetTimestamp.toString());
+    // 3. Logic: 
+    // - If no target exists (first load), SET target.
+    // - If target exists but is in the PAST (expired), RESET target to new duration (restart on refresh).
+    // - If target exists and is in FUTURE, keep using it (persist on refresh).
+    
+    if (!targetTimestamp || now > targetTimestamp) {
+        // Create new target
+        targetTimestamp = now + (durationSeconds * 1000);
+        localStorage.setItem(STORAGE_KEY, targetTimestamp.toString());
     }
 
     const tick = () => {
@@ -31,6 +37,9 @@ const Timer: React.FC<TimerProps> = ({ durationSeconds, onExpire }) => {
 
       if (secondsRemaining <= 0) {
         onExpire();
+        // We do NOT clear storage here. We leave the old timestamp.
+        // This ensures if they close tab and come back immediately, it still shows finished.
+        // But if they refresh the page (component remounts), the check above (now > targetTimestamp) will be true, triggering a restart.
       }
     };
 

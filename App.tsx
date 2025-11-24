@@ -6,9 +6,7 @@ import ProductRow from './components/ProductRow';
 
 // List of Gucci campaign videos
 const VIDEO_URLS = [
-  "https://house-fastly-signed-eu-west-1-prod.brightcovecdn.com/media/v1/pmp4/static/clear/2924921183001/4687bdf7-c429-45dc-bbf4-dafe31dca93a/bc2a75f8-d2c4-4b71-b02a-6bd7ec0d3d95/main.mp4?fastly_token=NjkyMzBhMjNfN2JlOWIyN2MyYzg4NjA1NDIwYTJjMTY5ZWE5OTQ1MjYyZTIwMzdhZjUwOWE5MGRhMTAyMjI2YTIxZTY0Y2IxN18vL2hvdXNlLWZhc3RseS1zaWduZWQtZXUtd2VzdC0xLXByb2QuYnJpZ2h0Y292ZWNkbi5jb20vbWVkaWEvdjEvcG1wNC9zdGF0aWMvY2xlYXIvMjkyNDkyMTE4MzAwMS80Njg3YmRmNy1jNDI5LTQ1ZGMtYmJmNC1kYWZlMzFkY2E5M2EvYmMyYTc1ZjgtZDJjNC00YjcxLWIwMmEtNmJkN2VjMGQzZDk1L21haW4ubXA0",
-  "https://house-fastly-signed-eu-west-1-prod.brightcovecdn.com/media/v1/pmp4/static/clear/2924921183001/1ae69177-dc03-40fd-8b6f-4de60b08a8db/052c4667-e7df-437d-b8d5-87ffbaaf1a5f/main.mp4?fastly_token=NjkyMzIxNTJfY2Y2MTYzMDE2YmU1NDMyNGY2ZDNmYTZjYjNhZjM0MTBjODIyNTZlN2JmOTk4M2I3ZmJmYzRkMDY3MzNkMDg3N18vL2hvdXNlLWZhc3RseS1zaWduZWQtZXUtd2VzdC0xLXByb2QuYnJpZ2h0Y292ZWNkbi5jb20vbWVkaWEvdjEvcG1wNC9zdGF0aWMvY2xlYXIvMjkyNDkyMTE4MzAwMS8xYWU2OTE3Ny1kYzAzLTQwZmQtOGI2Zi00ZGU2MGIwOGE4ZGIvMDUyYzQ2NjctZTdkZi00MzdkLWI4ZDUtODdmZmJhYWYxYTVmL21haW4ubXA0",
-  "https://house-fastly-signed-eu-west-1-prod.brightcovecdn.com/media/v1/pmp4/static/clear/2924921183001/71f1d2ac-bcc9-4210-bd04-9f2c9c856224/33cb203f-4057-4143-ba70-dfadc0ca402a/main.mp4?fastly_token=NjkyMzFiMDNfNWQ2MDg3ODE0ZDFlYjg3MzVhNzhjZjJjNzVjYjkwN2ZiN2JjMjEwMzA5OWEwZDVjNWQ1MDc5OTk4MzU2Nzc4Nl8vL2hvdXNlLWZhc3RseS1zaWduZWQtZXUtd2VzdC0xLXByb2QuYnJpZ2h0Y292ZWNkbi5jb20vbWVkaWEvdjEvcG1wNC9zdGF0aWMvY2xlYXIvMjkyNDkyMTE4MzAwMS83MWYxZDJhYy1iY2M5LTQyMTAtYmQwNC05ZjJjOWM4NTYyMjQvMzNjYjIwM2YtNDA1Ny00MTQzLWJhNzAtZGZhZGMwY2E0MDJhL21haW4ubXA0"
+  "https://house-fastly-signed-eu-west-1-prod.brightcovecdn.com/media/v1/pmp4/static/clear/2924921183001/bfb943ac-a9bb-4202-8d1c-fa7d10e9c3c6/cec6f69d-1edf-4a79-b3b9-150a2114c5a3/main.mp4?fastly_token=NjkyNDQwOWVfMDUxODIwOWI0OTM1ZGU5ZTEzNzQ5MjAyODkyMWFlNjVkNDkxYTNlYWE5Y2M4N2RhYTVlMWExODY5YzlkNTg0OV8vL2hvdXNlLWZhc3RseS1zaWduZWQtZXUtd2VzdC0xLXByb2QuYnJpZ2h0Y292ZWNkbi5jb20vbWVkaWEvdjEvcG1wNC9zdGF0aWMvY2xlYXIvMjkyNDkyMTE4MzAwMS9iZmI5NDNhYy1hOWJiLTQyMDItOGQxYy1mYTdkMTBlOWMzYzYvY2VjNmY2OWQtMWVkZi00YTc5LWIzYjktMTUwYTIxMTRjNWEzL21haW4ubXA0"
 ];
 
 const GUCCI_IMAGE_URL = "https://media.gucci.com/content/DiaryArticleDouble_Standard_1400x894/1744017303/DiaryArticleDouble_Gucci-MDAY-APR25-GUCCI-FESTIVITIES-ADV-YARA-KERI-A-0719_001_Default.jpg";
@@ -17,17 +15,15 @@ const App: React.FC = () => {
   const [isExpired, setIsExpired] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState(VIDEO_URLS[0]);
 
-  // Rotate videos randomly every 10 seconds
+  // Video rotation logic (if multiple videos exist in the future)
   useEffect(() => {
-    // Set initial random video
-    setCurrentVideoUrl(VIDEO_URLS[Math.floor(Math.random() * VIDEO_URLS.length)]);
-
-    const interval = setInterval(() => {
-      const randomIndex = Math.floor(Math.random() * VIDEO_URLS.length);
-      setCurrentVideoUrl(VIDEO_URLS[randomIndex]);
-    }, 10000); // Changed to 10s for better viewing experience
-
-    return () => clearInterval(interval);
+    if (VIDEO_URLS.length > 1) {
+        const interval = setInterval(() => {
+        const randomIndex = Math.floor(Math.random() * VIDEO_URLS.length);
+        setCurrentVideoUrl(VIDEO_URLS[randomIndex]);
+        }, 10000);
+        return () => clearInterval(interval);
+    }
   }, []);
 
   const handleTimerExpire = () => {
@@ -59,13 +55,13 @@ const App: React.FC = () => {
         </div>
 
         {/* Hero Media Section */}
-        <div className="relative w-full max-w-[1600px] mx-auto aspect-video md:aspect-[21/9] overflow-hidden bg-gucci-gray mb-0 shadow-2xl">
+        <div className="relative w-full max-w-[1600px] mx-auto aspect-video md:aspect-[21/9] overflow-hidden bg-gucci-gray mb-0 shadow-2xl group">
             
             {/* Video Layer - Plays when active (Not Expired) */}
             <div className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${!isExpired ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}>
                 <video 
                     key={currentVideoUrl}
-                    className="w-full h-full object-cover opacity-90"
+                    className="w-full h-full object-cover opacity-100"
                     autoPlay 
                     loop 
                     muted 
@@ -75,6 +71,8 @@ const App: React.FC = () => {
                     <source src={currentVideoUrl} type="video/mp4"/>
                     Your browser does not support the video tag.
                 </video>
+                {/* Overlay gradient for better text readability if needed */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
             </div>
 
             {/* Static Image Layer - Shows when Expired */}
@@ -82,9 +80,9 @@ const App: React.FC = () => {
                 <img 
                     src={GUCCI_IMAGE_URL} 
                     alt="Gucci Icons Campaign" 
-                    className="w-full h-full object-cover grayscale opacity-50 blur-[2px]"
+                    className="w-full h-full object-cover grayscale opacity-60"
                 />
-                <div className="absolute inset-0 bg-black/40"></div>
+                <div className="absolute inset-0 bg-black/50"></div>
             </div>
         </div>
 
